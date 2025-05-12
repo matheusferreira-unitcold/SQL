@@ -1,0 +1,250 @@
+WITH BASEQUERY AS (
+    SELECT
+        DISTINCT TGFCAB.CODTIPOPER,
+        TGFTOP.DESCROPER,
+        TGFTOP.TIPMOV,
+        (TGFTOP.ATUALESTMP) * (TGFITE.QTDNEG) AS QTD_MOV,
+        (TGFITE.VLRTOT) * (TGFTOP.ATUALESTMP) AS VLR_MOV,
+        TGFITE.VLRUNIT,
+        TGFITE.NUNOTA,
+        TGFITE.SEQUENCIA,
+        COALESCE(TGFCUSITE.ENTRADACOMICMS, 0) AS ENTRADACOMICMS,
+        COALESCE(TGFCUSITE.ENTRADASEMICMS, 0) AS ENTRADASEMICMS,
+        TGFCAB.STATUSNOTA,
+        TGFITE.CODPROD,
+        TGFITE.QTDNEG,
+        TGFCAB.DTNEG,
+        TGFCAB.DTFATUR
+    FROM
+        TGFITE
+        INNER JOIN TGFCAB
+        ON TGFITE.NUNOTA = TGFCAB.NUNOTA
+        INNER JOIN TGFTOP
+        ON TGFCAB.CODTIPOPER = TGFTOP.CODTIPOPER
+        LEFT JOIN TGFCUSITE
+        ON TGFITE.NUNOTA = TGFCUSITE.NUNOTA
+        AND TGFITE.SEQUENCIA = TGFCUSITE.SEQUENCIA
+    WHERE
+        TGFTOP.ATUALESTMP IN ('1', '-1')
+        AND TGFTOP.TIPMOV <> 'T'
+), NUMBEREDQUERY AS (
+    SELECT
+        DISTINCT T.CODTIPOPER,
+        T.DESCROPER,
+        T.TIPMOV,
+        T.QTD_MOV,
+        T.VLR_MOV,
+        T.VLRUNIT,
+        T.NUNOTA,
+        T.SEQUENCIA,
+        T.ENTRADACOMICMS,
+        T.ENTRADASEMICMS,
+        T.STATUSNOTA,
+        T.CODPROD,
+        T.QTDNEG,
+        T.DTNEG,
+        T.DTFATUR,
+        ROW_NUMBER() OVER (PARTITION BY T.CODPROD ORDER BY T.DTFATUR, T.SEQUENCIA) AS NUM_SEQUENCIAL
+    FROM
+        BASEQUERY T
+), FILTEREDPOSITIVEMOVEMENTS AS (
+    SELECT
+        N.CODPROD,
+        N.NUM_SEQUENCIAL,
+        N.QTD_MOV,
+        CASE
+            WHEN N.ENTRADACOMICMS = 0 THEN
+                COALESCE(LAG(N.ENTRADACOMICMS) OVER (PARTITION BY N.CODPROD ORDER BY N.DTFATUR, N.SEQUENCIA),
+                LEAD(N.ENTRADACOMICMS) OVER (PARTITION BY N.CODPROD ORDER BY N.DTFATUR, N.SEQUENCIA))
+            ELSE
+                N.ENTRADACOMICMS
+        END              AS ENTRADACOMICMS,
+        CASE
+            WHEN N.ENTRADASEMICMS = 0 THEN
+                COALESCE(LAG(N.ENTRADASEMICMS) OVER (PARTITION BY N.CODPROD ORDER BY N.DTFATUR, N.SEQUENCIA),
+                LEAD(N.ENTRADASEMICMS) OVER (PARTITION BY N.CODPROD ORDER BY N.DTFATUR, N.SEQUENCIA))
+            ELSE
+                N.ENTRADASEMICMS
+        END              AS ENTRADASEMICMS,
+ 
+        -- Saldo acumulado (somente para os valores filtrados)
+        SUM(N.QTD_MOV) OVER (PARTITION BY N.CODPROD ORDER BY N.DTFATUR, N.SEQUENCIA ROWS BETWEEN UNBOUNDED PRECEDING
+        AND CURRENT ROW) AS SALDO,
+ 
+        -- Colunas da BaseQuery com o alias N.
+        N.CODTIPOPER,
+        N.DESCROPER,
+        N.TIPMOV,
+        N.VLR_MOV,
+        N.VLRUNIT,
+        N.NUNOTA,
+        N.SEQUENCIA,
+        N.STATUSNOTA,
+        N.QTDNEG,
+        N.DTNEG,
+        N.DTFATUR
+    FROM
+        NUMBEREDQUERY N
+    WHERE
+        N.QTD_MOV > 0 -- Filtra apenas os movimentos positivos
+), FILTEREDNEGATIVEMOVEMENTS AS (
+    SELECT
+        N.CODPROD,
+        N.NUM_SEQUENCIAL,
+        N.QTD_MOV,
+ 
+        -- Considera o último valor positivo de ENTRADACOMICMS para movimentos negativos
+        COALESCE( (
+            SELECT
+                ENTRADACOMICMS
+            FROM
+                FILTEREDPOSITIVEMOVEMENTS F
+            WHERE
+                F.CODPROD = N.CODPROD
+                AND F.NUM_SEQUENCIAL <= N.NUM_SEQUENCIAL
+            ORDER BY
+                F.NUM_SEQUENCIAL DESC FETCH FIRST 1 ROWS ONLY
+        ), N.ENTRADACOMICMS ) AS ENTRADACOMICMS,
+ 
+        -- Considera o último valor positivo de ENTRADASEMICMS para movimentos negativos
+        COALESCE( (
+            SELECT
+                ENTRADASEMICMS
+            FROM
+                FILTEREDPOSITIVEMOVEMENTS F
+            WHERE
+                F.CODPROD = N.CODPROD
+                AND F.NUM_SEQUENCIAL <= N.NUM_SEQUENCIAL
+            ORDER BY
+                F.NUM_SEQUENCIAL DESC FETCH FIRST 1 ROWS ONLY
+        ),
+        N.ENTRADASEMICMS ) AS ENTRADASEMICMS,
+ 
+        -- Saldo acumulado para movimentos negativos, também considerando os valores positivos
+        SUM(N.QTD_MOV) OVER (PARTITION BY N.CODPROD ORDER BY N.NUM_SEQUENCIAL ROWS BETWEEN UNBOUNDED PRECEDING
+        AND CURRENT ROW) AS SALDO,
+ 
+        -- Colunas da BaseQuery com o alias N.
+        N.CODTIPOPER,
+        N.DESCROPER,
+        N.TIPMOV,
+        N.VLR_MOV,
+        N.VLRUNIT,
+        N.NUNOTA,
+        N.SEQUENCIA,
+        N.STATUSNOTA,
+        N.QTDNEG,
+        N.DTNEG,
+        N.DTFATUR
+    FROM
+        NUMBEREDQUERY             N
+    WHERE
+        N.QTD_MOV < 0 -- Apenas saídas (movimentos negativos)
+), COMBINEDMOVEMENTS AS (
+    SELECT
+        CODPROD,
+        NUM_SEQUENCIAL,
+        QTD_MOV,
+        ENTRADACOMICMS,
+        ENTRADASEMICMS,
+        SALDO,
+        CODTIPOPER,
+        DESCROPER,
+        TIPMOV,
+        VLR_MOV,
+        VLRUNIT,
+        NUNOTA,
+        SEQUENCIA,
+        STATUSNOTA,
+        QTDNEG,
+        DTNEG,
+        DTFATUR
+    FROM
+        FILTEREDPOSITIVEMOVEMENTS
+    UNION
+    ALL
+    SELECT
+        CODPROD,
+        NUM_SEQUENCIAL,
+        QTD_MOV,
+        ENTRADACOMICMS,
+        ENTRADASEMICMS,
+        SALDO,
+        CODTIPOPER,
+        DESCROPER,
+        TIPMOV,
+        VLR_MOV,
+        VLRUNIT,
+        NUNOTA,
+        SEQUENCIA,
+        STATUSNOTA,
+        QTDNEG,
+        DTNEG,
+        DTFATUR
+    FROM
+        FILTEREDNEGATIVEMOVEMENTS
+)
+SELECT
+    C.CODTIPOPER,
+    C.DESCROPER,
+    C.TIPMOV,
+    C.QTD_MOV,
+    C.VLR_MOV,
+    C.VLRUNIT,
+    C.NUNOTA,
+    C.SEQUENCIA,
+    C.ENTRADACOMICMS,
+    C.ENTRADASEMICMS,
+    C.STATUSNOTA,
+    C.CODPROD,
+    C.NUM_SEQUENCIAL,
+    C.QTDNEG,
+    C.DTNEG,
+    C.DTFATUR,
+ 
+    -- Saldo acumulado
+    SUM(C.QTD_MOV) OVER (PARTITION BY C.CODPROD ORDER BY C.NUM_SEQUENCIAL ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW)     AS SALDO,
+ 
+    -- Média ponderada de ENTRADACOMICMS calculada apenas para movimentos positivos
+    SUM(
+        CASE
+            WHEN C.QTD_MOV > 0 THEN
+                C.ENTRADACOMICMS * C.QTD_MOV
+            ELSE
+                0
+        END) OVER (PARTITION BY C.CODPROD ORDER BY C.NUM_SEQUENCIAL ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW) / NULLIF(SUM(
+        CASE
+            WHEN C.QTD_MOV > 0 THEN
+                C.QTD_MOV
+            ELSE
+                0
+        END) OVER (PARTITION BY C.CODPROD ORDER BY C.NUM_SEQUENCIAL ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW), 0) AS MEDIA_PONDERADA_ENTRADACOMICMS,
+ 
+    -- Média ponderada de ENTRADASEMICMS calculada apenas para movimentos positivos
+    SUM(
+        CASE
+            WHEN C.QTD_MOV > 0 THEN
+                C.ENTRADASEMICMS * C.QTD_MOV
+            ELSE
+                0
+        END) OVER (PARTITION BY C.CODPROD ORDER BY C.NUM_SEQUENCIAL ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW) / NULLIF(SUM(
+        CASE
+            WHEN C.QTD_MOV > 0 THEN
+                C.QTD_MOV
+            ELSE
+                0
+        END) OVER (PARTITION BY C.CODPROD ORDER BY C.NUM_SEQUENCIAL ROWS BETWEEN UNBOUNDED PRECEDING
+    AND CURRENT ROW), 0) AS MEDIA_PONDERADA_ENTRADASEMICMS
+FROM
+    COMBINEDMOVEMENTS C
+WHERE
+    C.DTFATUR <= :DT_SALDO
+    AND C.CODPROD = :COD_PROD
+    OR :COD_PROD IS NULL
+ORDER BY
+    C.CODPROD,
+    C.NUM_SEQUENCIAL

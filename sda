@@ -1,0 +1,75 @@
+<gadget ><level id="02K" description="Pedidos Pendentes"><container orientacao="V" tamanhoRelativo="100"><container orientacao="V" tamanhoRelativo="84.93150684931507"><grid id="grd_02L" entityName="ItemNota" multiplaSelecao="S" useNewGrid="S"><title><![CDATA[PEDIDOS PENDENTES]]></title><expression type="sql" data-source="MGEDS"><![CDATA[SELECT DISTINCT
+    TGFCAB.DTNEG,
+    TGFCAB.DTPREVENT,
+    TGFCAB.CODPARC,
+    TGFPAR.NOMEPARC,
+    TGFPAR.RAZAOSOCIAL,
+    TGFCAB.NUNOTA,
+    TGFCAB.NUMNOTA,
+    TGFCAB.VLRNOTA,
+    TGFCAB.CODTIPOPER,
+    TGFTOP.DESCROPER,
+    TGFCAB.CODTIPVENDA,
+    TGFTPV.DESCRTIPVENDA,
+    TGFCAB.CODVEND,
+    TGFVEN.APELIDO,
+    TGFCAB.STATUSNOTA,
+    TGFCAB.TIPMOV,
+    TGFCAB.CODUSUINC,
+    TSIUSU.NOMEUSU,
+    TGFCAB.PENDENTE,
+    TGFCAB.AD_NPROPOSTA,
+    (SELECT COUNT(CASE WHEN TGFITE.PENDENTE = 'S' THEN 1 END)
+     FROM TGFITE
+     WHERE TGFITE.NUNOTA = TGFCAB.NUNOTA) AS total_pendente,
+    (SELECT COUNT(CASE WHEN TGFITE.PENDENTE = 'N' THEN 1 END)
+     FROM TGFITE
+     WHERE TGFITE.NUNOTA = TGFCAB.NUNOTA) AS total_entregue,
+    (SELECT 
+      CASE WHEN ((COUNT(TGFITE.SEQUENCIA)-COUNT(CASE WHEN TGFITE.PENDENTE = 'S' THEN 1 END)) = 0) THEN 'Pendente'
+           WHEN ((COUNT(TGFITE.SEQUENCIA)-COUNT(CASE WHEN TGFITE.PENDENTE = 'S' THEN 1 END)) <> 0) THEN 'Parcial' END
+     FROM TGFITE
+     WHERE TGFITE.NUNOTA = TGFCAB.NUNOTA) AS status_total
+FROM
+    TGFCAB
+    INNER JOIN TGFPAR ON TGFCAB.CODPARC = TGFPAR.CODPARC
+    INNER JOIN TGFTOP ON TGFCAB.CODTIPOPER = TGFTOP.CODTIPOPER
+    INNER JOIN TGFTPV ON TGFCAB.CODTIPVENDA = TGFTPV.CODTIPVENDA
+    INNER JOIN TGFVEN ON TGFCAB.CODVEND = TGFVEN.CODVEND
+    INNER JOIN TSIUSU ON TGFCAB.CODUSUINC = TSIUSU.CODUSU
+WHERE
+    TGFCAB.STATUSNOTA = 'L'
+    AND TGFCAB.TIPMOV = 'O'
+    AND TGFCAB.PENDENTE = 'S'
+    AND TGFCAB.CODTIPOPER <> '1316'
+    AND TGFCAB.CODTIPOPER <> '1964']]></expression><metadata><field name="DTNEG" label="DTNEG" type="D" visible="true" useFooter="false"></field><field name="DTPREVENT" label="DTPREVENT" type="D" visible="true" useFooter="false"></field><field name="CODPARC" label="CODPARC" type="I" visible="true" useFooter="false"></field><field name="NOMEPARC" label="NOMEPARC" type="S" visible="true" useFooter="false"></field><field name="RAZAOSOCIAL" label="RAZAOSOCIAL" type="S" visible="true" useFooter="false"></field><field name="NUNOTA" label="NUNOTA" type="I" visible="true" useFooter="false"></field><field name="NUMNOTA" label="NUMNOTA" type="I" visible="false" useFooter="false"></field><field name="VLRNOTA" label="VLRNOTA" type="F" visible="true" useFooter="false"></field><field name="CODTIPOPER" label="CODTIPOPER" type="I" visible="false" useFooter="false"></field><field name="DESCROPER" label="DESCROPER" type="S" visible="true" useFooter="false"></field><field name="CODTIPVENDA" label="CODTIPVENDA" type="I" visible="false" useFooter="false"></field><field name="DESCRTIPVENDA" label="DESCRTIPVENDA" type="S" visible="true" useFooter="false"></field><field name="CODVEND" label="CODVEND" type="I" visible="false" useFooter="false"></field><field name="APELIDO" label="APELIDO" type="S" visible="true" useFooter="false"></field><field name="STATUSNOTA" label="STATUSNOTA" type="S" visible="false" useFooter="false"></field><field name="TIPMOV" label="TIPMOV" type="S" visible="false" useFooter="false"></field><field name="CODUSUINC" label="CODUSUINC" type="I" visible="false" useFooter="false"></field><field name="NOMEUSU" label="NOMEUSU" type="S" visible="true" useFooter="false"></field><field name="PENDENTE" label="PENDENTE" type="S" visible="false" useFooter="false"></field><field name="AD_NPROPOSTA" label="AD_NPROPOSTA" type="S" visible="true" useFooter="false"></field><field name="TOTAL_PENDENTE" label="TOTAL_PENDENTE" type="I" visible="true" useFooter="false"></field><field name="TOTAL_ENTREGUE" label="TOTAL_ENTREGUE" type="I" visible="true" useFooter="false"></field><field name="STATUS_TOTAL" label="STATUS_TOTAL" type="S" visible="true" useFooter="false"></field></metadata><on-click  navigate-to="03F"><param id="A_NUNOTA">$NUNOTA</param></on-click></grid></container><container orientacao="V" tamanhoRelativo="15.068493150684931"></container></container></level><level id="03F" description="Itens de Pedidos Pendentes"><args ><arg id="A_NUNOTA" type="integer" label="A_NUNOTA : Número Inteiro"/></args><container orientacao="V" tamanhoRelativo="100"><grid id="grd_03L" entityName="ItemNota" multiplaSelecao="S" useNewGrid="S"><expression type="sql" data-source="MGEDS"><![CDATA[SELECT
+    TGFPAR.NOMEPARC,
+    TGFITE.CODPROD,
+    TGFCAB.NUNOTA,
+    TGFPRO.DESCRPROD,
+    TGFPRO.CODVOL,
+    TGFITE.NUNOTA,
+    TGFITE.SEQUENCIA,
+    TGFITE.QTDNEG,
+    TGFITE.QTDENTREGUE,
+    (TGFITE.QTDNEG-TGFITE.QTDENTREGUE) AS QTDPENDENTE,
+    TGFITE.VLRUNIT,
+    TGFITE.VLRTOT,
+    TGFITE.CODVOL,
+    TGFITE.CONTROLE,
+    TGFITE.PENDENTE,
+    TGFPRO.NCM,
+    TGFCAB.AD_NPROPOSTA
+FROM
+    TGFITE
+    INNER JOIN TGFCAB
+    ON TGFITE.NUNOTA = TGFCAB.NUNOTA
+    INNER JOIN TGFPRO
+    ON TGFPRO.CODPROD = TGFITE.CODPROD
+    INNER JOIN TGFPAR
+    ON TGFCAB.CODPARC = TGFPAR.CODPARC
+WHERE
+    TGFCAB.STATUSNOTA = 'L'
+    AND TGFCAB.TIPMOV = 'O'
+    AND TGFCAB.PENDENTE = 'S'
+    AND TGFITE.NUNOTA = :A_NUNOTA]]></expression><metadata><field name="NOMEPARC" label="NOMEPARC" type="S" visible="true" useFooter="false"></field><field name="CODPROD" label="CODPROD" type="I" visible="true" useFooter="false"></field><field name="NUNOTA" label="NUNOTA" type="I" visible="true" useFooter="false"></field><field name="DESCRPROD" label="DESCRPROD" type="S" visible="true" useFooter="false"></field><field name="CODVOL" label="CODVOL" type="S" visible="true" useFooter="false"></field><field name="SEQUENCIA" label="SEQUENCIA" type="I" visible="true" useFooter="false"></field><field name="QTDNEG" label="QTDNEG" type="F" visible="true" useFooter="false"></field><field name="QTDENTREGUE" label="QTDENTREGUE" type="F" visible="true" useFooter="false"></field><field name="QTDPENDENTE" label="QTDPENDENTE" type="I" visible="true" useFooter="false"></field><field name="VLRUNIT" label="VLRUNIT" type="F" visible="true" useFooter="false"></field><field name="VLRTOT" label="VLRTOT" type="F" visible="true" useFooter="false"></field><field name="CONTROLE" label="CONTROLE" type="S" visible="true" useFooter="false"></field><field name="PENDENTE" label="PENDENTE" type="S" visible="true" useFooter="false"></field><field name="NCM" label="NCM" type="S" visible="true" useFooter="false"></field><field name="AD_NPROPOSTA" label="AD_NPROPOSTA" type="S" visible="true" useFooter="false"></field></metadata></grid></container></level></gadget>

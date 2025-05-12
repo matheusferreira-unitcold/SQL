@@ -1,0 +1,32 @@
+((IF(PDES('SIMPLES','TSIEMP','CODEMP='+queCab.CODEMP)<>'S',
+   (  (queItens.VLRTOT + queItens.VLRIPI + queItens.VLRSUBST - queItens.VLRDESC)
+    - (IF(queTOP.TIPIPI = 1, queItens.VLRIPI,0))
+    - (IF((queTOP.TIPICMS = 1 OR queTOP.TIPICMS = 4 OR queTOP.TIPICMS = 5) AND (VAL(PDES('TIPICMS','TGFCFO','CODCFO='+CODCFO))=1) AND (queItens.VLRSUBST = 0),queItens.VLRICMS,0))
+    - (IF(queTGFDINPIS.CST>=50 AND queTGFDINPIS.CST<=66, queTGFDINPIS.VLRCRED,0))
+    - (IF(queTGFDINCOFINS.CST>=50 AND queTGFDINCOFINS.CST<=66, queTGFDINCOFINS.VLRCRED,0))
+    + (((VAL(PDES('VLRTOT + VLRIPI + VLRSUBST - VLRDESC','TGFITE','NUNOTA='+NUNOTA+'AND SEQUENCIA='+SEQUENCIA)))
+       /
+       (VAL(PDES('SUM(VLRTOT + VLRIPI + VLRSUBST - VLRDESC)','TGFITE','NUNOTA='+NUNOTA))))
+       *
+       ((IF(queCab.CIF_FOB = 'F',queCab.VLRFRETE,0)) + queCab.VLRSEG + queCab.VLROUTROS + queCab.VLRDESTAQUE + queCab.VLREMB - queCab.VLRDESCTOT))
+	- (IF((queTOP.TIPICMS = 1 OR queTOP.TIPICMS = 4 OR queTOP.TIPICMS = 5) AND (VAL(PDES('TIPICMS','TGFCFO','CODCFO='+CODCFO))=1) AND (queItens.VLRSUBST = 0),
+	     ((queItens.VLRTOT /  (VAL(PDES('SUM(VLRTOT)','TGFITE','NUNOTA='+NUNOTA)))) *  queCab.ICMSFRETE),
+		 0))
+	)
+   / queItens.QTDNEG,
+   (  (queItens.VLRTOT + queItens.VLRIPI + queItens.VLRSUBST - queItens.VLRDESC)
+    + (((VAL(PDES('VLRTOT + VLRIPI + VLRSUBST - VLRDESC','TGFITE','NUNOTA='+NUNOTA+'AND SEQUENCIA='+SEQUENCIA)))
+    /
+    (VAL(PDES('SUM(VLRTOT + VLRIPI + VLRSUBST - VLRDESC)','TGFITE','NUNOTA='+   ))))
+    *
+    ((IF(queCab.CIF_FOB = 'F',queCab.VLRFRETE,0)) + queCab.VLRSEG + queCab.VLROUTROS + queCab.VLRDESTAQUE + queCab.VLREMB - queCab.VLRDESCTOT)))
+    / queItens.QTDNEG)
+ )
+ *
+(1 - (queProd.MARGLUCRO/100)))
+/
+IF(PDES('SIMPLES','TSIEMP','CODEMP='+queCab.CODEMP)<>'S',
+   (1 - (((IF(queProd.TIPSUBST = 'N',ALIQVENDA,0)) + queEmp.PERCPIS + queEmp.PERCCOFINS + queProd.COMVEND + queProd.MARGLUCRO + buscaTSIPAR('PERCCUSFIXO'))/100)),
+   (1 - ((queProd.COMVEND + queProd.MARGLUCRO + buscaTSIPAR('PERCCUSFIXO')
+         + (VAL(PDES('ACL_GET_ALIQPART('+queItens.NUNOTA+')','DUAL','1=1'))))/100))
+  )

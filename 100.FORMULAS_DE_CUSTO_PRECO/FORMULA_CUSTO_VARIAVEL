@@ -1,0 +1,17 @@
+(CUSSEMICM /
+ (1 - (IF(PDES('SIMPLES','TSIEMP','CODEMP='+queCab.CODEMP)<>'S',
+      ((IF(queProd.TIPSUBST = 'N',ALIQVENDA,0)) + queEmp.PERCPIS + queEmp.PERCCOFINS + queProd.COMVEND + queProd.MARGLUCRO + buscaTSIPAR('PERCCUSFIXO'))/100,
+	  (queProd.COMVEND + queProd.MARGLUCRO + buscaTSIPAR('PERCCUSFIXO') + (VAL(PDES('ACL_GET_ALIQPART('+queItens.NUNOTA+')','DUAL','1=1')))) /100
+	      )
+	   )
+ )
+)
+- CUSSEMICM
+- (((CUSSEMICM /
+     (1 - (IF(PDES('SIMPLES','TSIEMP','CODEMP='+queCab.CODEMP)<>'S',
+      ((IF(queProd.TIPSUBST = 'N',ALIQVENDA,0)) + queEmp.PERCPIS + queEmp.PERCCOFINS + queProd.COMVEND + queProd.MARGLUCRO + buscaTSIPAR('PERCCUSFIXO'))/100,
+	  (queProd.COMVEND + queProd.MARGLUCRO + buscaTSIPAR('PERCCUSFIXO') + (VAL(PDES('ACL_GET_ALIQPART('+queItens.NUNOTA+')','DUAL','1=1')))) /100
+	          )
+	       )
+      )
+     )) * (queProd.MARGLUCRO/100))

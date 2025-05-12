@@ -1,0 +1,7 @@
+((queItens.VLRTOT + queItens.VLRIPI + queItens.VLRSUBST - queItens.VLRDESC)
++ (((VAL(PDES('VLRTOT + VLRIPI + VLRSUBST - VLRDESC','TGFITE','NUNOTA='+NUNOTA+'AND SEQUENCIA='+SEQUENCIA)))
+     /
+     (VAL(PDES('SUM(VLRTOT + VLRIPI + VLRSUBST - VLRDESC)','TGFITE','NUNOTA='+NUNOTA))))
+     *
+     ((IF(queCab.CIF_FOB = 'F',queCab.VLRFRETE,0)) + queCab.VLRSEG + queCab.VLROUTROS + queCab.VLRDESTAQUE + queCab.VLREMB - queCab.VLRDESCTOT)))
+  / queItens.QTDNEG
