@@ -93,7 +93,7 @@ ORDER BY 5 DESC, 1]]>
 	</pageHeader>
 	<columnHeader>
 		<band height="26" splitType="Stretch">
-			<rectangle radius="10">
+			<rectangle radius="6">
 				<reportElement x="2" y="0" width="553" height="20" backcolor="#CCCCCC"/>
 			</rectangle>
 			<staticText>
@@ -118,14 +118,14 @@ ORDER BY 5 DESC, 1]]>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="23" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
-					<font size="6"/>
+					<font size="7" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{CODPRODMP}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="40" y="0" width="352" height="12"/>
 				<textElement verticalAlignment="Middle" lineSpacing="Single">
-					<font size="6"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRPROD}]]></textFieldExpression>
 			</textField>
@@ -148,7 +148,7 @@ ORDER BY 5 DESC, 1]]>
 			<textField pattern="#,##0.0000" isBlankWhenNull="true">
 				<reportElement x="490" y="0" width="63" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
-					<font size="6" isBold="true"/>
+					<font size="7" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{QTD_PREVISTA}]]></textFieldExpression>
 			</textField>
