@@ -86,7 +86,7 @@ ORDER BY 1]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Pré-Ordem]]></text>
+				<text><![CDATA[LISTA DE MATERIAIS]]></text>
 			</staticText>
 		</band>
 	</title>

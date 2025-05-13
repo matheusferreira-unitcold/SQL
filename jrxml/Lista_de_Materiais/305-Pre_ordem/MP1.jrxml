@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MPs1" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.definition"/>
+	<parameter name="PERIODOINI" class="java.sql.Timestamp">
+		<parameterDescription><![CDATA[Período Inicial (inclusão da OP)]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PERIODOFIN" class="java.sql.Timestamp">
+		<parameterDescription><![CDATA[Período Final (Inclusão da OP)]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PK_IDIPROC" class="java.math.BigDecimal" isForPrompting="false">
+		<parameterDescription><![CDATA[Ordem de Produção]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IDIPROC" class="java.math.BigDecimal">
+		<property name="NOMETABELA" value="TPRIPROC"/>
+		<parameterDescription><![CDATA[Ordem de Produção]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DESMONTE" class="java.lang.Boolean">
+		<parameterDescription><![CDATA[Processo Desmonte?]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  TAB.CODPRODMP,
+  TAB.DESCRPROD,
+  TAB.CONTROLEMP,
+  TAB.CODVOL,
+  NVL(F_DESCROPC('TGFPRO', 'USOPROD', TAB.USOPROD),'Serviço') AS USOPROD,
+  SUM(CASE WHEN TAB.TIPOQTD = 'F'
+       THEN TAB.QTDMISTURA
+       ELSE TAB.QTDMISTURA * IPA.QTDPRODUZIR
+  END) AS QTD_PREVISTA,
+  F_DESCROPC('TPRLMP', 'TIPOUSOMP', TAB.TIPOUSOMP) AS TIPOUSOMP
+FROM TPRIPROC OPE
+INNER JOIN TPRPRC PRC ON PRC.IDPROC  = OPE.IDPROC
+INNER JOIN TPRIPA IPA ON IPA.IDIPROC = OPE.IDIPROC
+INNER JOIN (SELECT
+              EFX.IDPROC,
+              LMP.CODPRODPA,
+              LMP.CONTROLEPA,
+              LMP.CONTROLEMP,
+              LMP.CODPRODMP,
+              PRO.DESCRPROD,
+              PRO.USOPROD,
+              LMP.TIPOUSOMP,
+              LMP.TIPOQTD,
+              LMP.QTDMISTURA,
+              LMP.CODVOL,
+              LMP.GERAREQUISICAO,
+              LMP.CODLOCALORIG,
+              LOC.DESCRLOCAL,
+              PRO.DECQTD,
+              PRO.REFERENCIA
+            FROM TPRLMP LMP
+            JOIN TGFPRO PRO ON PRO.CODPROD = LMP.CODPRODMP
+            JOIN TPREFX EFX ON EFX.IDEFX = LMP.IDEFX
+            JOIN TGFLOC LOC ON LOC.CODLOCAL = LMP.CODLOCALORIG) TAB ON TAB.IDPROC = PRC.IDPROC  AND TAB.CODPRODPA = IPA.CODPRODPA AND (TAB.CONTROLEPA IS NULL OR TAB.CONTROLEPA = IPA.CONTROLEPA)
+WHERE OPE.STATUSPROC IN ('A','R')
+  AND TAB.USOPROD <> 'S'
+  AND TAB.TIPOUSOMP <> 'R'
+  AND TO_DATE(OPE.DHINC) BETWEEN NVL($P{PERIODOINI},'01/01/1999') AND NVL($P{PERIODOFIN},'31/12/2999')
+  AND OPE.IDIPROC BETWEEN COALESCE($P{PK_IDIPROC},$P{IDIPROC},1) AND COALESCE($P{PK_IDIPROC},$P{IDIPROC},(SELECT MAX(IDIPROC) FROM TPRIPROC))
+  AND PRC.PROCDESMONTE = CASE WHEN $P{DESMONTE} = 1 THEN 'S' ELSE 'N' END
+GROUP BY TAB.CODPRODMP, TAB.DESCRPROD, TAB.CONTROLEMP, TAB.CODVOL, TAB.USOPROD, TAB.TIPOUSOMP
+--UNION ALL
+--SELECT NULL, NULL, NULL, NULL, 'A', NULL, NULL FROM DUAL
+
+ORDER BY 5 DESC, 1]]>
+	</queryString>
+	<field name="CODPRODMP" class="java.math.BigDecimal"/>
+	<field name="DESCRPROD" class="java.lang.String"/>
+	<field name="CONTROLEMP" class="java.lang.String"/>
+	<field name="CODVOL" class="java.lang.String"/>
+	<field name="USOPROD" class="java.lang.String"/>
+	<field name="QTD_PREVISTA" class="java.math.BigDecimal"/>
+	<field name="TIPOUSOMP" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<!--<band height="26" splitType="Stretch">
+			<rectangle radius="6">
+				<reportElement x="2" y="0" width="553" height="20" backcolor="#CCCCCC"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="553" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Materias usados na operação normal ou ajustes]]></text>
+			</staticText>
+
+		</band>-->
+		    <!-- Cabeçalho estático (aparece apenas na primeira página) -->
+	<band height="15">
+		<rectangle radius="5">
+            <reportElement x="0" y="0" width="565" height="15"/>
+        </rectangle>
+        <staticText>
+            <reportElement x="0" y="0" width="23" height="15"/>
+            <textElement textAlignment="Right" verticalAlignment="Middle">
+                <font size="8" isBold="true"/>
+            </textElement>
+            <text><![CDATA[Cód.]]></text>
+        </staticText>
+        <staticText>
+            <reportElement x="40" y="0" width="352" height="15"/>
+            <textElement verticalAlignment="Middle" textAlignment="Center">
+                <font size="8" isBold="true"/>
+            </textElement>
+            <text><![CDATA[Descrição]]></text>
+        </staticText>
+        <staticText>
+            <reportElement x="392" y="0" width="31" height="15"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle">
+                <font size="8" isBold="true"/>
+            </textElement>
+            <text><![CDATA[Un.]]></text>
+        </staticText>
+        <staticText>
+            <reportElement x="423" y="0" width="100" height="15"/>
+            <textElement verticalAlignment="Middle" textAlignment="Center">
+                <font size="8" isBold="true"/>
+            </textElement>
+            <text><![CDATA[Data/Nome]]></text>
+        </staticText>
+        <staticText>
+            <reportElement x="490" y="0" width="63" height="15"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle">
+                <font size="8" isBold="true"/>
+            </textElement>
+            <text><![CDATA[Quantidade]]></text>
+        </staticText>
+    </band>
+	</columnHeader>
+	<detail>
+    <!-- Band original dos dados -->
+    <band height="12" splitType="Stretch">
+        <!-- Seus campos existentes aqui -->
+        <rectangle>
+            <reportElement x="2" y="0" width="551" height="12" backcolor="#CCCCCC">
+                <printWhenExpression><![CDATA[($V{PAGE_COUNT}.intValue() % 2) == 0 && $F{USOPROD}.length() > 1]]></printWhenExpression>
+            </reportElement>
+            <graphicElement>
+                <pen lineWidth="0.0"/>
+            </graphicElement>
+        </rectangle>
+			<!-- Campo para o valor numérico (BigDecimal) -->
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="23" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal">
+					<![CDATA[$F{CODPRODMP}]]>
+				</textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="23" y="0" width="12" height="12"/>
+				<textElement verticalAlignment="Middle" textAlignment="Center">
+					<font fontName="DejaVu Sans" size="10"/> <!-- Use uma fonte que suporte □ -->
+				</textElement>
+				<textFieldExpression><![CDATA["□"]]></textFieldExpression> <!-- Unicode U+25A1 -->
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="0" width="352" height="12"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRPROD}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="423" y="0" width="100" height="12">
+					<printWhenExpression><![CDATA[$F{USOPROD}.length() > 1]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["____/____  "+"__________"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="392" y="0" width="31" height="12"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{CODVOL}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+				<reportElement x="490" y="0" width="63" height="12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{QTD_PREVISTA}]]></textFieldExpression>
+			</textField>
+			<!-- Quadrado (□) posicionado após QTD_PREVISTA -->
+			<textField>
+				<reportElement x="553" y="0" width="12" height="12"/> <!-- x = 490 + 63 (largura do campo anterior) -->
+				<textElement verticalAlignment="Middle" textAlignment="Center">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["□"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="28" splitType="Stretch">
+			<subreport>
+				<reportElement key="MPs2" x="0" y="18" width="553" height="10"/>
+				<subreportParameter name="PERIODOINI"/>
+				<subreportParameter name="PERIODOFIN"/>
+				<subreportParameter name="PK_IDIPROC"/>
+				<subreportParameter name="IDIPROC"/>
+				<subreportParameter name="DESMONTE"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "MP2.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>
