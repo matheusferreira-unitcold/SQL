@@ -114,7 +114,7 @@ ORDER BY 1]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
 					<font fontName="SansSerif" size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Tipo do Produto]]></text>
+				<text><![CDATA[Tipo]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="469" y="45" width="85" height="20"/>
