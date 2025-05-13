@@ -68,10 +68,8 @@ WHERE OPE.STATUSPROC IN ('A','R')
   AND OPE.IDIPROC BETWEEN COALESCE($P{PK_IDIPROC},$P{IDIPROC},1) AND COALESCE($P{PK_IDIPROC},$P{IDIPROC},(SELECT MAX(IDIPROC) FROM TPRIPROC))
   AND PRC.PROCDESMONTE = CASE WHEN $P{DESMONTE} = 1 THEN 'S' ELSE 'N' END
 GROUP BY TAB.CODPRODMP, TAB.DESCRPROD, TAB.CONTROLEMP, TAB.CODVOL, TAB.USOPROD, TAB.TIPOUSOMP
-
-UNION ALL
-
-SELECT NULL, NULL, NULL, NULL, 'A', NULL, NULL FROM DUAL
+--UNION ALL
+--SELECT NULL, NULL, NULL, NULL, 'A', NULL, NULL FROM DUAL
 
 ORDER BY 5 DESC, 1]]>
 	</queryString>
@@ -115,12 +113,22 @@ ORDER BY 5 DESC, 1]]>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
 			</rectangle>
+			<!-- Campo para o valor numérico (BigDecimal) -->
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="23" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
 					<font size="7" isBold="true"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{CODPRODMP}]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal">
+					<![CDATA[$F{CODPRODMP}]]>
+				</textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="23" y="0" width="12" height="12"/>
+				<textElement verticalAlignment="Middle" textAlignment="Center">
+					<font fontName="DejaVu Sans" size="10"/> <!-- Use uma fonte que suporte □ -->
+				</textElement>
+				<textFieldExpression><![CDATA["□"]]></textFieldExpression> <!-- Unicode U+25A1 -->
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="40" y="0" width="352" height="12"/>
@@ -130,13 +138,13 @@ ORDER BY 5 DESC, 1]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRPROD}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="423" y="0" width="67" height="12">
+				<reportElement x="423" y="0" width="100" height="12">
 					<printWhenExpression><![CDATA[$F{USOPROD}.length() > 1]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle" lineSpacing="Single">
-					<font size="6"/>
+					<font size="7"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{USOPROD}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["____/____  "+"__________"]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="392" y="0" width="31" height="12"/>
@@ -151,6 +159,14 @@ ORDER BY 5 DESC, 1]]>
 					<font size="7" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{QTD_PREVISTA}]]></textFieldExpression>
+			</textField>
+			<!-- Quadrado (□) posicionado após QTD_PREVISTA -->
+			<textField>
+				<reportElement x="553" y="0" width="12" height="12"/> <!-- x = 490 + 63 (largura do campo anterior) -->
+				<textElement verticalAlignment="Middle" textAlignment="Center">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["□"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
