@@ -75,14 +75,14 @@ ORDER BY 1]]>
 	<title>
 		<band height="44" splitType="Stretch">
 			<rectangle radius="5">
-				<reportElement x="-1" y="1" width="565" height="42"/>
+				<reportElement x="-1" y="1" width="560" height="42"/>
 			</rectangle>
 			<image onErrorType="Blank">
 				<reportElement key="image-1" stretchType="RelativeToTallestObject" x="13" y="7" width="104" height="30"/>
 				<imageExpression class="java.lang.String"><![CDATA[$P{PDIR_MODELO} + "logo.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="1" y="7" width="565" height="30"/>
+				<reportElement x="1" y="7" width="560" height="30"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
 					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
@@ -93,7 +93,7 @@ ORDER BY 1]]>
 	<pageHeader>
 		<band height="78">
 			<rectangle radius="5">
-				<reportElement x="1" y="45" width="565" height="20" backcolor="#CCCCCC"/>
+				<reportElement x="1" y="45" width="560" height="20" backcolor="#CCCCCC"/>
 			</rectangle>
 			<staticText>
 				<reportElement mode="Transparent" x="1" y="45" width="40" height="20"/>
@@ -138,11 +138,11 @@ ORDER BY 1]]>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$P{PERIODOINI}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="13" width="76" height="12"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single" markup="none">
-					<font size="10" isBold="true"/>
+				<reportElement x="0" y="13" width="90" height="14"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single" markup="none">
+					<font size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Nro. da OP.:]]></text>
+				<text><![CDATA[Nro. da OP:]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement x="136" y="3" width="45" height="10"/>
@@ -152,16 +152,16 @@ ORDER BY 1]]>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$P{PERIODOFIN}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0" isBlankWhenNull="true">
-				<reportElement x="77" y="13" width="55" height="12"/>
-				<textElement verticalAlignment="Middle" lineSpacing="Single" markup="none">
-					<font size="10" isBold="true" isUnderline="true"/>
+				<reportElement x="67" y="13" width="55" height="14"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single" markup="none" textAlignment="Left">
+					<font size="12" isBold="true" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$P{IDIPROC}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0" isBlankWhenNull="true">
-				<reportElement x="77" y="13" width="55" height="12"/>
-				<textElement verticalAlignment="Middle" lineSpacing="Single" markup="none">
-					<font size="10" isBold="true" isUnderline="true"/>
+				<reportElement x="67" y="13" width="55" height="14"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single" markup="none" textAlignment="Left">
+					<font size="12" isBold="true" isUnderline="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$P{PK_IDIPROC}]]></textFieldExpression>
 			</textField>
@@ -182,9 +182,9 @@ ORDER BY 1]]>
 		</band>
 	</columnHeader>-->
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band height="11" splitType="Stretch">
 			<rectangle>
-				<reportElement x="1" y="0" width="553" height="12" backcolor="#CCCCCC">
+				<reportElement x="1" y="0" width="553" height="11" backcolor="#CCCCCC">
 					<printWhenExpression><![CDATA[($V{PAGE_COUNT}.intValue() % 2) == 0]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
@@ -192,37 +192,37 @@ ORDER BY 1]]>
 				</graphicElement>
 			</rectangle>
 			<textField pattern="###0">
-				<reportElement x="0" y="0" width="31" height="12"/>
+				<reportElement x="0" y="0" width="31" height="11"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
-					<font size="10"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{CODPRODPA}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="41" y="0" width="326" height="12"/>
+				<reportElement x="41" y="0" width="326" height="11"/>
 				<textElement verticalAlignment="Middle" lineSpacing="Single">
-					<font size="10"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRPROD}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="367" y="0" width="31" height="12"/>
+				<reportElement x="367" y="0" width="31" height="11"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
-					<font size="10"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{CODVOL}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="416" y="0" width="76" height="12"/>
+				<reportElement x="416" y="0" width="76" height="11"/>
 				<textElement verticalAlignment="Middle" lineSpacing="Single">
-					<font size="10"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{USOPROD}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.0000">
-				<reportElement x="492" y="0" width="59" height="12"/>
+				<reportElement x="492" y="0" width="59" height="11"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
-					<font size="10" isBold="true"/>
+					<font size="9" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{PLANEJADO}]]></textFieldExpression>
 			</textField>

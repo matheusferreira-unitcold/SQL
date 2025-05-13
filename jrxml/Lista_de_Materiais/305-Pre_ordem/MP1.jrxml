@@ -106,14 +106,14 @@ ORDER BY 5 DESC, 1]]>
 		    <!-- Cabeçalho estático (aparece apenas na primeira página) -->
 	<band height="15">
 		<rectangle radius="5">
-            <reportElement x="0" y="0" width="565" height="15"/>
+            <reportElement x="0" y="0" width="560" height="15"/>
         </rectangle>
         <staticText>
-            <reportElement x="0" y="0" width="23" height="15"/>
-            <textElement textAlignment="Right" verticalAlignment="Middle">
+            <reportElement x="2" y="0" width="93" height="15"/>
+            <textElement textAlignment="Left" verticalAlignment="Middle">
                 <font size="8" isBold="true"/>
             </textElement>
-            <text><![CDATA[Cód.]]></text>
+            <text><![CDATA[Cód.|Empenhado]]></text>
         </staticText>
         <staticText>
             <reportElement x="40" y="0" width="352" height="15"/>
@@ -131,17 +131,17 @@ ORDER BY 5 DESC, 1]]>
         </staticText>
         <staticText>
             <reportElement x="423" y="0" width="100" height="15"/>
-            <textElement verticalAlignment="Middle" textAlignment="Center">
+            <textElement verticalAlignment="Middle" textAlignment="Left">
                 <font size="8" isBold="true"/>
             </textElement>
             <text><![CDATA[Data/Nome]]></text>
         </staticText>
         <staticText>
-            <reportElement x="490" y="0" width="63" height="15"/>
+            <reportElement x="490" y="0" width="73" height="15"/>
             <textElement textAlignment="Center" verticalAlignment="Middle">
                 <font size="8" isBold="true"/>
             </textElement>
-            <text><![CDATA[Quantidade]]></text>
+            <text><![CDATA[Qtd.|Entregue]]></text>
         </staticText>
     </band>
 	</columnHeader>
@@ -150,7 +150,7 @@ ORDER BY 5 DESC, 1]]>
     <band height="12" splitType="Stretch">
         <!-- Seus campos existentes aqui -->
         <rectangle>
-            <reportElement x="2" y="0" width="551" height="12" backcolor="#CCCCCC">
+            <reportElement x="2" y="0" width="551" height="12" backcolor="#dedede">
                 <printWhenExpression><![CDATA[($V{PAGE_COUNT}.intValue() % 2) == 0 && $F{USOPROD}.length() > 1]]></printWhenExpression>
             </reportElement>
             <graphicElement>
@@ -197,16 +197,16 @@ ORDER BY 5 DESC, 1]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{CODVOL}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+			<textField pattern="#,##0.000" isBlankWhenNull="true">
 				<reportElement x="490" y="0" width="63" height="12"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
 					<font size="7" isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{QTD_PREVISTA}]]></textFieldExpression>
 			</textField>
 			<!-- Quadrado (□) posicionado após QTD_PREVISTA -->
 			<textField>
-				<reportElement x="553" y="0" width="12" height="12"/> <!-- x = 490 + 63 (largura do campo anterior) -->
+				<reportElement x="533" y="0" width="12" height="12"/> <!-- x = 490 + 63 (largura do campo anterior) -->
 				<textElement verticalAlignment="Middle" textAlignment="Center">
 					<font fontName="DejaVu Sans" size="10"/>
 				</textElement>
