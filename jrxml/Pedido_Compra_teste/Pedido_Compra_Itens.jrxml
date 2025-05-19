@@ -13,6 +13,7 @@
         PRO.REFFORN,
         ITE.CODPROD,
         PRO.DESCRPROD,
+		ITE.CONTROLE,
 CASE WHEN ITE.CODVOL <> (SELECT P.CODVOL FROM TGFPRO P WHERE P.CODPROD = ITE.CODPROD ) THEN
 Volumealt(ITE.CODPROD
           ,ITE.QTDNEG
@@ -37,6 +38,7 @@ WHERE ITE.NUNOTA = $P{NUNOTA}]]>
 	<field name="COMPLDESC" class="java.lang.String"/>
 	<field name="CODPROD" class="java.math.BigDecimal"/>
 	<field name="DESCRPROD" class="java.lang.String"/>
+	<field name="CONTROLE" class="java.lang.String"/>
 	<field name="QTDNEG" class="java.math.BigDecimal"/>
 	<field name="CODVOL" class="java.lang.String"/>
 	<field name="VLRUNIT" class="java.math.BigDecimal"/>
@@ -151,7 +153,7 @@ WHERE ITE.NUNOTA = $P{NUNOTA}]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="Tahoma" size="6" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRPROD}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRPROD} + " " + $F{CONTROLE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement mode="Transparent" x="243" y="0" width="25" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
