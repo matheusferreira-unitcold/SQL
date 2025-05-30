@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ordem_de_producao_corrigido_subreport3" language="groovy" pageWidth="275" pageHeight="802" columnWidth="275" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="3.138428376721006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.definition"/>
+	<parameter name="P_IDIPROC" class="java.math.BigDecimal" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+        DISTINCT
+        SYSDATE AS NOW,
+        PRO.CARACTERISTICAS,
+        CAB.NUNOTA,
+        CAB.CODPARC AS CLIENTE,
+        DEP.IDIPROCPA,
+        DEP.CODPRODPA AS CODPRODPADEP,
+        DEP.QTDDEP,
+        PRODEP.DESCRPROD AS DESCRDEP,
+        OP.IDIPROC,
+        OP.DHINC,
+        PRC.VERSAO,
+        OP.NROLOTE,
+        OP.PRIORIDADE,
+        PRC.CODPRC,
+        PRC.DESCRABREV,
+        OP.TEMPOATRAVESS / IPA.QTDPRODUZIR AS TEMPPREV,
+        IPA.CODPRODPA,
+        PRO.DESCRPROD,
+        GRU.DESCRGRUPOPROD,
+        PRO.CODVOL,
+        IPA.QTDPRODUZIR || ' / ' || PRO.CODVOL AS QTD,
+        OP.CODUSUINC || ' - ' || USU.NOMEUSU AS RESPONSAVEL,
+        IPA.QTDPRODUZIR,
+        EST.CONTROLE,
+        TO_CHAR(EST.DTVAL,'DD/MM/YYYY') AS DTVAL,
+        TO_CHAR(EST.DTFABRICACAO,'DD/MM/YYYY') AS DTFABRICACAO,
+        OP.DHTERMINO
+
+FROM TPRIPROC OP
+INNER JOIN TPRIPA IPA ON OP.IDIPROC = IPA.IDIPROC
+INNER JOIN TGFPRO PRO ON IPA.CODPRODPA = PRO.CODPROD
+INNER JOIN TGFGRU GRU ON PRO.CODGRUPOPROD = GRU.CODGRUPOPROD
+INNER JOIN TPRPRC PRC ON OP.IDPROC = PRC.IDPROC
+INNER JOIN TSIUSU USU ON OP.CODUSUINC = USU.CODUSU
+INNER JOIN TPREFX EFX ON OP.IDPROC = EFX.IDPROC AND EFX.TIPO = 1101
+INNER JOIN TPRLMP MP ON EFX.IDEFX = MP.IDEFX AND IPA.CODPRODPA = MP.CODPRODPA
+INNER JOIN TGFPRO PMP ON MP.CODPRODMP = PMP.CODPROD
+LEFT JOIN TGFCAB CAB ON OP.IDIPROC = CAB.IDIPROC AND CAB.TIPMOV = 'P'
+LEFT JOIN TPRIDEP DEP ON OP.IDIPROC = DEP.IDIPROCPI
+LEFT JOIN TGFPRO PRODEP ON DEP.CODPRODPA = PRODEP.CODPROD
+LEFT JOIN TGFEST EST ON IPA.CODPRODPA = EST.CODPROD
+                    AND EST.DTVAL = (SELECT MIN(DTVAL)
+                                        FROM TGFEST
+                                        WHERE CODPROD = EST.CODPROD
+                                        AND (ESTOQUE - RESERVADO) >= (IPA.QTDPRODUZIR * MP.QTDMISTURA)
+                                        AND STATUSLOTE != 'Q')
+                    AND EST.STATUSLOTE != 'Q'
+                    AND (EST.ESTOQUE - EST.RESERVADO) >= (IPA.QTDPRODUZIR * MP.QTDMISTURA)
+WHERE OP.IDIPROC = $P{P_IDIPROC}
+AND OP.STATUSPROC != 'C']]>
+	</queryString>
+	<field name="NUNOTA" class="java.math.BigDecimal"/>
+	<field name="CLIENTE" class="java.math.BigDecimal"/>
+	<field name="IDIPROCPA" class="java.math.BigDecimal"/>
+	<field name="DESCRDEP" class="java.lang.String"/>
+	<field name="CODPRODPADEP" class="java.math.BigDecimal"/>
+	<field name="QTDDEP" class="java.math.BigDecimal"/>
+	<background>
+		<band height="50">
+			<rectangle>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="275" height="50"/>
+			</rectangle>
+		</band>
+	</background>
+	<columnHeader>
+		<band height="16" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="1" width="36" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[P. Venda]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="136" y="1" width="26" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cód]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="66" y="1" width="38" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Proposta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="36" y="1" width="30" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="256" y="1" width="19" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qtd]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="104" y="1" width="32" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N°OP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="162" y="1" width="94" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descrição]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="36" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="6"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{NUNOTA}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="36" y="0" width="30" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{CLIENTE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="104" y="0" width="32" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{IDIPROCPA}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="136" y="0" width="26" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{CODPRODPADEP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="162" y="0" width="94" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRDEP}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="256" y="0" width="19" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="7"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{QTDDEP}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

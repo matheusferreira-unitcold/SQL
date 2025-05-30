@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ordem_de_producao_corrigido_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.6105100000000012"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.definition"/>
+	<parameter name="P_IDIPROC" class="java.math.BigDecimal" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[SELECT
+    ROWNUM,
+    EFX.DESCRICAO,
+    NVL(WCP.NOME,'') AS NOME,
+    TO_CHAR(IATV.DHINICIO, 'DD/MM/YY HH24:MI:SS') AS DHINICIO,
+    TO_CHAR(IATV.DHFINAL, 'DD/MM/YY HH24:MI:SS') AS DHFINAL,
+    OP.TEMPOATRAVESS / IPA.QTDPRODUZIR AS TEMPPREV
+FROM TPRIPROC OP
+INNER JOIN TPRATV ATV ON OP.IDPROC = ATV.IDPROC
+INNER JOIN TPREFX EFX ON ATV.IDEFX = EFX.IDEFX AND ATV.IDPROC = EFX.IDPROC
+INNER JOIN TPRIATV IATV ON IATV.IDIPROC = OP.IDIPROC
+LEFT JOIN TPRWCP WCP ON IATV.CODWCP = WCP.CODWCP
+LEFT JOIN TPRIPA IPA ON OP.IDIPROC = IPA.IDIPROC
+WHERE OP.IDIPROC = $P{P_IDIPROC}
+ORDER BY 1,ATV.SEQEXECUCAO]]>
+	</queryString>
+	<field name="ROWNUM" class="java.math.BigDecimal"/>
+	<field name="DESCRICAO" class="java.lang.String"/>
+	<field name="NOME" class="java.lang.String"/>
+	<field name="DHINICIO" class="java.lang.String"/>
+	<field name="DHFINAL" class="java.lang.String"/>
+	<field name="TEMPPREV" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
+			<rectangle>
+				<reportElement x="483" y="0" width="72" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="428" y="0" width="55" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="373" y="0" width="55" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="210" y="0" width="163" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="47" y="0" width="163" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="0" width="47" height="14"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="47" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Seq.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="47" y="0" width="163" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Processo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="0" width="163" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Centro de Trab.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="373" y="0" width="55" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Início]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="428" y="0" width="55" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Término]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="483" y="0" width="72" height="14"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+					<pen lineWidth="1.5"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tempo Previsto]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<rectangle>
+				<reportElement x="483" y="0" width="72" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="428" y="0" width="55" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="373" y="0" width="55" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="210" y="0" width="163" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="47" y="0" width="163" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="0" width="47" height="14"/>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="47" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{ROWNUM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="47" y="0" width="163" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DESCRICAO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="210" y="0" width="163" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{NOME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yy - HH:mm" isBlankWhenNull="true">
+				<reportElement x="373" y="0" width="55" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="5" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DHINICIO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yy - HH:mm" isBlankWhenNull="true">
+				<reportElement x="428" y="0" width="55" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="5" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{DHFINAL}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="483" y="0" width="72" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{TEMPPREV}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
