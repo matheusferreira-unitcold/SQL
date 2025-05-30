@@ -57,7 +57,8 @@ LEFT JOIN TGFEST EST ON IPA.CODPRODPA = EST.CODPROD
                     AND EST.STATUSLOTE != 'Q'
                     AND (EST.ESTOQUE - EST.RESERVADO) >= (IPA.QTDPRODUZIR * MP.QTDMISTURA)
 WHERE OP.IDIPROC = $P{P_IDIPROC}
-AND OP.STATUSPROC != 'C']]>
+AND OP.STATUSPROC != 'C'
+  ]]>
 	</queryString>
 	<field name="NUNOTA" class="java.math.BigDecimal"/>
 	<field name="CLIENTE" class="java.math.BigDecimal"/>
